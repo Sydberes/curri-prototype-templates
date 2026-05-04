@@ -1,0 +1,17 @@
+# Vercel
+.vercel
+
+# Env files (contain secrets)
+.env
+.env.local
+.env*.local
+
+# Next.js
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# OS
+.DS_Store

@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Resolved token values from @curri/curri-styles
+  Source: packages/curri-styles/src/foundations.css + foundation-light.css + design-tokens.css
+  In the main app these are provided by curri-styles — this file is demo-only.
+*/
+:root {
+  /* Primitive neutrals */
+  --color-neutral-0: hsla(0, 0%, 100%, 1);
+  --color-neutral-50: hsla(0, 0%, 98.8%, 1);
+  --color-neutral-100: hsla(0, 0%, 97.6%, 1);
+  --color-neutral-200: hsla(0, 0%, 95.7%, 1);
+  --color-neutral-300: hsla(0, 0%, 92.9%, 1);
+  --color-neutral-350: hsla(0, 0%, 85.5%, 1);
+  --color-neutral-400: hsla(180, 3%, 82%, 1);
+  --color-neutral-alpha-200a: hsla(0, 0%, 95.7%, 0.6);
+  --color-neutral-alpha-400a: hsla(180, 3%, 82%, 0.6);
+  --color-neutral-600: hsla(0, 0%, 60%, 1);
+  --color-neutral-700: hsla(0, 0%, 47.8%, 1);
+  --color-neutral-800: hsla(0, 0%, 38.4%, 1);
+  --color-neutral-900: hsla(0, 0%, 26.7%, 1);
+  --color-neutral-1000: hsla(0, 0%, 11%, 1);
+
+  /* Primitive brand */
+  --color-teal-700: hsla(166, 100%, 29%, 1);
+
+  /* Semantic surface tokens */
+  --color-elevation-surface-overlay: var(--color-neutral-0);
+  --color-elevation-surface-overlay-hover: var(--color-neutral-200);
+  --color-elevation-surface-raised: var(--color-neutral-0);
+  --color-elevation-surface-raised-hover: var(--color-neutral-200);
+  --color-elevation-surface-base: var(--color-neutral-200);
+  --color-elevation-surface-base-hover: var(--color-neutral-350);
+  --color-elevation-surface-sunken: var(--color-neutral-300);
+
+  /* Semantic text tokens */
+  --color-text-primary: var(--color-neutral-1000);
+  --color-text-secondary: var(--color-neutral-900);
+  --color-text-tertiary: var(--color-neutral-700);
+  --color-text-brand: var(--color-teal-700);
+
+  /* Semantic icon tokens */
+  --color-icon-primary: var(--color-neutral-1000);
+  --color-icon-secondary: var(--color-neutral-900);
+  --color-icon-tertiary: var(--color-neutral-700);
+
+  /* Semantic border tokens */
+  --color-border-primary: var(--color-neutral-alpha-400a);
+
+  /* Neutral backgrounds */
+  --color-background-neutral-secondary: transparent;
+  --color-background-neutral-secondary-hover: var(--color-neutral-alpha-200a);
+
+  /* Blanket (modal overlay) */
+  --color-blanket-blanket: var(--color-neutral-alpha-400a);
+
+  /* Shadows */
+  --shadow-elevation-overlay: 0px 8px 12px rgba(9, 30, 66, 0.15), 0px 0px 1px rgba(9, 30, 66, 0.31);
+  --shadow-elevation-raised: 0px 1px 1px rgba(9, 30, 66, 0.25), 0px 0px 1px rgba(9, 30, 66, 0.31);
+
+  /* Typography */
+  --font-body: 'Inter';
+  --font-heading: 'Inter';
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --text-heading-large: 24px;
+  --text-heading-medium: 18px;
+  --text-heading-small: 16px;
+  --text-body-base: 14px;
+  --text-body-medium: 12px;
+  --text-body-small: 10px;
+  --text-body-xsmall: 8px;
+  --text-accent-large: 10px;
+
+  --leading-heading-large: 32px;
+  --leading-heading-medium: 22px;
+  --leading-heading-small: 20px;
+  --leading-body-base: 18px;
+  --leading-body-medium: 16px;
+  --leading-body-small: 12px;
+  --leading-body-xsmall: 10px;
+  --leading-accent-large: 14px;
+
+  /* Scale primitives (from foundations.css) */
+  --scale-0: 0px;
+  --scale-10: 0.5px;
+  --scale-25: 1px;
+  --scale-50: 2px;
+  --scale-100: 4px;
+  --scale-150: 6px;
+  --scale-200: 8px;
+  --scale-300: 12px;
+  --scale-400: 16px;
+  --scale-500: 20px;
+  --scale-600: 24px;
+  --scale-800: 32px;
+  --scale-1600: 64px;
+
+  /* Spacing */
+  --spacing-button-height: var(--scale-150);
+  --spacing-xxs: var(--scale-100);
+  --spacing-xs: var(--scale-200);
+  --spacing-sm: var(--scale-300);
+  --spacing-md: var(--scale-400);
+  --spacing-lg: var(--scale-600);
+
+  /* Border width */
+  --border-width-default: var(--scale-10);
+
+  /* Radius */
+  --radius-xs: var(--scale-100);
+  --radius-sm: var(--scale-200);
+  --radius-m: var(--scale-400);
+  --radius-xl: var(--scale-600);
+  --radius-xxl: var(--scale-800);
+  --radius-round: var(--scale-1600);
+}
