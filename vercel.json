@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd changelog-component && npm install && npm run build",
+  "outputDirectory": "changelog-component/.next",
+  "installCommand": "echo skipped (handled in buildCommand)",
+  "framework": "nextjs"
+}

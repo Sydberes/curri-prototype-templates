@@ -1,17 +1,9 @@
-# Vercel
-.vercel
-
-# Env files (contain secrets)
+node_modules/
+dist/
+.next/
+.vercel/
 .env
 .env.local
 .env*.local
-
-# Next.js
-.next/
-out/
-
-# Dependencies
-node_modules/
-
-# OS
 .DS_Store
+*.tsbuildinfo

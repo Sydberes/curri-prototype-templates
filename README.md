@@ -1,52 +1,48 @@
-# Changelog Component
+# Curri Prototype Templates
 
-In-app changelog notification and modal for the Curri app. Surfaces product updates from a Notion database.
+Starter templates for prototyping Curri product surfaces with Claude Code. The companion skill `curri-prototyping-setup` (in `teamcurri/ai-skills`) clones from here and scaffolds a working prototype based on which surface you're designing.
 
-## Links
-
-- **Demo**: https://changelog-component-lyart.vercel.app
-- **Mockup** (in-app placement): https://changelog-component-lyart.vercel.app/mockup
-- **Figma**: https://www.figma.com/design/fKjY6fv5uXyXNYp53ZAC8C/1.-Curri-UI-Library-v1.3?node-id=1517-75
-- **Releases page** (live): https://www.curri.com/blog?category=updates
-
-## What to integrate
-
-These are the only files that go into the Curri app:
-
-| File | Purpose |
-|------|---------|
-| `src/components/changelog/ChangelogNotification.tsx` | Sidebar notification (text-only and with-image variants) |
-| `src/components/changelog/ChangelogPanel.tsx` | Modal that opens on click |
-| `src/components/changelog/ChangelogFeatureCard.tsx` | Feature card inside the modal |
-| `src/components/changelog/types.ts` | Shared TypeScript types |
-| `src/hooks/useChangelog.ts` | Manages seen state via localStorage |
-| `src/lib/changelog.server.ts` | Fetches entries from Notion (server-side) |
-
-Everything else in this repo is demo scaffolding.
-
-## How it works
-
-1. `fetchChangelogEntries()` queries a Notion database and maps rows to `ChangelogEntry[]`
-2. The Curri app exposes this via an API route (see `src/app/api/changelog/route.ts`)
-3. `useChangelog` fetches from that route, tracks the last-seen entry ID in localStorage, and exposes `isNotifVisible`, `openPanel`, and `dismissNotification`
-4. `ChangelogNotification` renders in the sidebar — use the `withPreview` prop for the image variant
-5. Clicking opens `ChangelogPanel`; dismissing hides the notification until a newer entry is published
-
-## Notion setup
-
-The fetch logic expects these environment variables:
+## What's in this repo
 
 ```
-NOTION_TOKEN=your_notion_integration_token
-NOTION_CHANGELOG_DATABASE_ID=your_database_id
+.
+├── templates/
+│   ├── booking-funnel/        ← booking flow (multi-step funnel, vehicle selector)
+│   ├── delivery-history/      ← admin delivery history + live deliveries
+│   ├── route-planner/         ← dispatcher planner (swimlanes + exceptions)
+│   └── shell/                 ← generic sidenav + chrome shell for custom surfaces
+└── changelog-component/       ← in-app changelog notification (separate concern, see below)
 ```
 
-See `src/lib/changelog.server.ts` for the full query. Uses `@notionhq/client` v5 — note that v5 uses `notion.dataSources.query()`, not `databases.query()`.
+## Templates
 
-## Design tokens
+Each template is a standalone project that runs with `npm install && npm run dev`. They share a stack — React 19 + Vite + Tailwind v4 + Curri tokens — and a set of common dependencies (Base UI, Phosphor icons, framer-motion, class-variance-authority).
 
-Components use curri-styles tokens. See `src/app/globals.css` for the full token reference — in the Curri app these resolve automatically via curri-styles, no extra setup needed.
+| Template | Live reference | Source prototype |
+|---|---|---|
+| `booking-funnel` | https://ai-booking-experience.vercel.app | `Brain/Projects/ai-booking-experience` |
+| `delivery-history` | https://prototype-deploy-map.vercel.app | `Brain/prototype-deploy-map` (static HTML wrapped in Vite) |
+| `route-planner` | https://route-planner-exceptions.vercel.app | `Brain/Projects/route-planner-exceptions` |
+| `shell` | https://core-intelligence-seven.vercel.app | `Brain/Projects/core-intelligence` (stripped) |
 
-## Placement
+## How to use a template directly
 
-Notification sits at the bottom of the main nav sidebar, above the divider that separates nav items from utility links (Theme, Help & support, Log out).
+```bash
+gh repo clone Sydberes/curri-prototype-templates
+cp -r curri-prototype-templates/templates/<name> ~/Workspace/<your-prototype-name>
+cd ~/Workspace/<your-prototype-name>
+npm install
+npm run dev
+```
+
+Better: install the `curri-prototyping-setup` skill from `teamcurri/ai-skills` and let it walk you through.
+
+## Changelog Component (separate)
+
+This repo also contains the in-app Changelog Component used inside the Curri app. It lives at `changelog-component/` and deploys to https://changelog-component-lyart.vercel.app. It's unrelated to the templates — same repo for historical reasons.
+
+For changelog-specific docs, see `changelog-component/README.md`.
+
+## Maintainer
+
+Sydney Beres • Product Designer III, Curri • sydney.beres@curri.com
