@@ -162,10 +162,6 @@ function CurriCard({ children }: { children: React.ReactNode }) {
   return <div className="curri-card">{children}</div>
 }
 
-function CurriDivider() {
-  return <div className="curri-divider" />
-}
-
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <div className="curri-section-label">{children}</div>
 }
