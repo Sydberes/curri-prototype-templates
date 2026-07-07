@@ -1,0 +1,335 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "leaflet/dist/leaflet.css";
+
+@import "./styles/foundations.css" layer(theme);
+@import "./styles/design-tokens.css" layer(theme);
+@import "./styles/responsive-tokens.css" layer(theme);
+@import "./styles/foundation-light.css" layer(theme);
+@import "./styles/foundation-dark.css" layer(theme);
+@import "./styles/theme-dark.css" layer(theme);
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light dark;
+    font-family: Inter, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-elevation-surface-primary);
+    color: var(--color-text-primary);
+    text-wrap: pretty;
+  }
+}
+
+@keyframes grid-drift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 14px 14px; }
+}
+
+@keyframes ai-breathe {
+  0%, 100% { transform: scale(1);    opacity: 0.7; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+
+@keyframes ai-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* Searching state — a single blinking status dot in the eta line.
+   Single source of motion per the connecting state. */
+@keyframes status-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.28; }
+}
+
+.tp-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-icon-accent-hivis);
+  box-shadow: 0 0 0 3px var(--color-background-accent-hivis-subtle);
+  animation: status-blink 1.3s ease-in-out infinite;
+}
+
+@keyframes ai-hex-spin {
+  0%, 6%   { transform: rotate(0deg); }
+  60%      { transform: rotate(355deg); }
+  72%      { transform: rotate(372deg); }
+  84%      { transform: rotate(357deg); }
+  100%     { transform: rotate(360deg); }
+}
+
+@keyframes ai-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-once {
+  0%   { transform: scale(1);    }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1);    }
+}
+
+@keyframes thumb-pop {
+  0%   { transform: scale(0.7)  rotate(-8deg); opacity: 0.6; }
+  55%  { transform: scale(1.25) rotate(2deg);  opacity: 1;   }
+  100% { transform: scale(1)    rotate(0deg);  opacity: 1;   }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 0.5; }
+  70%  { transform: scale(1.6); opacity: 0;   }
+  100% { transform: scale(1.6); opacity: 0;   }
+}
+
+/* POD photo stack on map.
+   Default: photos tightly stacked (pos * 6px offset + slight rotation).
+   On stack hover: spread into a horizontal row (pos * 38px offset, no rotation).
+   On individual slot hover: that photo scales 1.3x. */
+.leaflet-marker-icon.tp-pod-stack-marker:hover {
+  z-index: 10000 !important;
+}
+
+.tp-pod-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tp-pod-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  /* Pivot from bottom-center so cards fan around a clustered base */
+  transform-origin: 50% 100%;
+  /* Default: tight at the bottom, fanned at the top (hand-of-cards) */
+  transform: translateX(calc(var(--spread-pos, 0) * 2px))
+    rotate(calc(var(--spread-pos, 0) * 7deg));
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+}
+
+.tp-pod-stack:hover .tp-pod-slot {
+  /* Spread state: centered horizontal line, photos nearly edge-to-edge at
+     base 1.3x scale; hovered photo overlaps slightly but z-index keeps it
+     on top */
+  transform: translateX(calc(var(--spread-pos, 0) * 46px)) rotate(0deg);
+}
+
+.tp-pod-slot:hover {
+  z-index: 999 !important;
+}
+
+.tp-pod-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  border: 1.5px solid #fff;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14),
+    0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  /* Grow upward from the photo's bottom edge so the baseline stays put */
+  transform-origin: 50% 100%;
+  transform: scale(1);
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tp-pod-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tp-pod-stack:hover .tp-pod-photo {
+  transform: scale(1.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12),
+    0 0 0 0.5px rgba(0, 0, 0, 0.06);
+}
+
+.tp-pod-stack:hover .tp-pod-slot:hover .tp-pod-photo {
+  transform: scale(2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+}
+
+.tp-pod-stack.is-selected .tp-pod-photo {
+  box-shadow: 0 0 0 2px hsla(180, 3%, 82%, 1),
+    0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
+/* Action buttons: hover + press states using curri tokens */
+.tp-action-btn {
+  transition: background-color 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 100ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tp-action-btn:active {
+  transform: scale(0.97);
+}
+
+.tp-action-primary {
+  background: var(--color-background-brand-primary);
+}
+.tp-action-primary:hover {
+  background: var(--color-background-brand-primary-hover);
+}
+.tp-action-primary:active {
+  background: var(--color-background-brand-primary-pressed);
+}
+
+.tp-action-ghost {
+  background: var(--color-background-neutral-primary);
+}
+.tp-action-ghost:hover {
+  background: var(--color-background-neutral-primary-hover);
+}
+.tp-action-ghost:active {
+  background: var(--color-background-neutral-primary-pressed);
+}
+
+.tp-action-danger {
+  background: var(--color-background-neutral-primary);
+  color: var(--color-text-danger);
+}
+.tp-action-danger:hover {
+  background: var(--color-background-system-danger);
+  border-color: var(--color-border-danger);
+}
+.tp-action-danger:active {
+  background: var(--color-background-system-danger-hover);
+}
+
+/* Hover tooltip — attach via data-tip on any button.
+   Renders below the host with a short delay; no JS required. */
+.tp-tip-host {
+  position: relative;
+}
+.tp-tip-host::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  padding: 4px 8px;
+  background: var(--color-background-neutral-bold);
+  color: var(--color-text-primary-inverse);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease-out 180ms,
+              transform 160ms ease-out 180ms;
+  z-index: 1000;
+}
+.tp-tip-host:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Breadcrumb back link (booker inside a receiver view) */
+.tp-crumb-back {
+  transition: color 140ms ease-out;
+}
+.tp-crumb-back:hover {
+  color: var(--color-text-primary) !important;
+}
+
+/* Multi-PO pickup summary — discloses the per-PO manifest */
+.tp-payload-summary {
+  cursor: pointer;
+  transition: color 140ms ease-out;
+}
+.tp-payload-summary:hover {
+  color: var(--color-text-primary) !important;
+}
+
+/* Payload PO link — opens that receiver's tracking view (booker only).
+   Faint underline at rest signals clickability; solid on hover. */
+.tp-payload-link {
+  color: var(--color-text-information);
+  cursor: pointer;
+  border-radius: 2px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+  transition: text-decoration-color 140ms ease-out;
+}
+.tp-payload-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Mobile sheet type scale — a notch larger than the dense desktop sizes,
+   snapped to the curri-styles type tokens. Shared components read these vars
+   with desktop-px fallbacks, so only the mobile sheet gets the bump. */
+.tp-mobile-sheet {
+  --tp-hero-size: var(--text-heading-large);     /* 24px */
+  --tp-hero-line: var(--leading-heading-large);  /* 32px */
+  --tp-title-size: var(--text-heading-small);    /* 16px */
+  --tp-body-size: var(--text-body-base);         /* 14px */
+  --tp-body-line: var(--leading-body-base);      /* 18px */
+}
+
+/* Mobile overflow-menu row */
+.tp-menu-item {
+  background: transparent;
+  transition: background-color 140ms ease-out;
+}
+.tp-menu-item:hover,
+.tp-menu-item:active {
+  background: var(--color-background-neutral-secondary-hover);
+}
+
+/* Stop row: subtle hover so it reads as clickable */
+.tp-stop-row {
+  background: transparent;
+  transition: background-color 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tp-stop-row:hover {
+  background: var(--color-background-neutral-secondary-hover);
+}
+.tp-stop-row.is-selected {
+  background: var(--color-background-selected);
+}
+.tp-stop-row.is-selected:hover {
+  background: var(--color-background-selected-hover);
+}
+
+/* Hover tooltip on a canceled map pin — Curri DS Tooltip: white overlay surface,
+   hairline border, soft overlay shadow, primary text at body/medium. */
+.tp-cancel-tooltip.leaflet-tooltip {
+  background: var(--color-elevation-surface-overlay);
+  color: var(--color-text-primary);
+  border: var(--border-width-default) solid var(--color-border-primary);
+  border-radius: var(--radius-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font: 500 14px/21px Inter, system-ui, sans-serif;
+  font-feature-settings: 'cv10' 1, 'ss01' 1;
+  white-space: nowrap;
+  box-shadow: var(--shadow-elevation-overlay);
+}
+/* DS Tooltip has no pointer — hide Leaflet's injected caret. */
+.tp-cancel-tooltip.leaflet-tooltip::before {
+  display: none;
+}
+
