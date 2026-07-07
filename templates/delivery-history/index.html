@@ -37,6 +37,11 @@
       --bg-neutral-pressed:    hsla(180, 3%, 82%, 0.6); /* neutral-alpha-400a → color-background-neutral-primary-pressed */
       --border-focused:        hsl(0, 0%, 11%);         /* neutral-1000 → color-border-focused */
       --brand-primary:         hsl(163, 100%, 45%);     /* teal-500 → color-background-brand-primary */
+      --brand-primary-hover:   hsl(163, 100%, 44%);     /* teal-525 → color-background-brand-primary-hover */
+      --brand-primary-pressed: hsl(164, 100%, 41%);     /* teal-550 → color-background-brand-primary-pressed */
+      --text-brand-button:     hsl(0, 0%, 11%);         /* neutral-1000 → color-text-brand-button */
+      --text-inverse:          hsl(0, 0%, 99%);         /* neutral-50 → color-text-primary-inverse */
+      --icon-primary:          hsl(0, 0%, 11%);         /* neutral-1000 → color-icon-primary */
     }
 
     html, body { height: 100%; }
@@ -924,11 +929,9 @@
 
     .dropdown-section-label {
       padding: 8px 12px 2px;
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 500;
       color: var(--text-tertiary);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
     }
 
     .dropdown-item {
@@ -1551,7 +1554,7 @@
     }
 
     /* Highlighted table row */
-    tr.row-highlighted > td { background: rgba(0,227,163,0.07) !important; }
+    tr.row-highlighted > td { background: var(--bg-pressed) !important; }
 
     /* ── DELIVERY DRAWER ── */
     /* ── DRAWER ── */
@@ -1595,7 +1598,13 @@
     .drawer-close-btn i { font-size: 15px; }
     .drawer-hdr-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .drawer-hdr-left { display: flex; align-items: center; gap: 8px; }
-    .drawer-del-id { font-size: 11px; color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
+    .drawer-del-id {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--text-tertiary); font-variant-numeric: tabular-nums;
+      background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+    }
+    .drawer-del-id:hover { color: var(--text-secondary); }
+    .drawer-del-id i { font-size: 11px; }
     .drawer-hdr-actions { display: flex; gap: 4px; align-items: center; }
     .drawer-btn {
       display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px;
@@ -1622,15 +1631,43 @@
 
     .drawer-body { flex: 1; overflow-y: auto; }
 
+    /* Drawer route map */
+    .drawer-map {
+      height: 196px; margin: 16px 20px 4px; border-radius: 8px;
+      overflow: hidden; border: 0.5px solid var(--border-solid);
+      background: var(--surface-sunken); position: relative; z-index: 0;
+    }
+    .drawer-map .leaflet-container { background: var(--surface-sunken); }
+    .dm-pin {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: #1c1c1c; border: 1.5px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 12px; font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    /* Canceled waypoint — solid muted grey so it reads on the map but stays clearly inactive. */
+    .dm-pin-canceled { background: #8b9096; }
+    /* Curri DS Tooltip: white overlay surface, hairline border, overlay shadow, primary text. */
+    .dm-cancel-tooltip.leaflet-tooltip {
+      background: var(--surface-primary); color: var(--text-primary);
+      border: 0.5px solid var(--border); border-radius: 4px;
+      padding: 8px 16px; font: 500 14px/21px Inter, system-ui, sans-serif;
+      font-feature-settings: 'cv10' 1, 'ss01' 1;
+      white-space: nowrap; box-shadow: var(--shadow-overlay);
+    }
+    /* DS Tooltip has no pointer — hide Leaflet's injected caret. */
+    .dm-cancel-tooltip.leaflet-tooltip:before { display: none; }
+    .dm-origin {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #1c1c1c; border: 2.5px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+
     .drawer-section { padding: 20px 20px 4px; }
     .drawer-section-title {
-      font-size: 11px; font-weight: 600; color: var(--text-tertiary);
-      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 14px;
-    }
-    .drawer-section-title + .drawer-section-count {
-      font-size: 12px; font-weight: 500; color: var(--text-tertiary);
-      margin-top: -10px; margin-bottom: 12px;
-      font-variant-numeric: tabular-nums;
+      font-size: 12px; font-weight: 500; color: var(--text-primary);
+      margin-bottom: 14px;
     }
 
     .stop-cards { display: flex; flex-direction: column; gap: 8px; }
@@ -1643,17 +1680,38 @@
       gap: 10px; padding: 12px 14px; cursor: pointer;
     }
     .stop-card-hdr-left { flex: 1; min-width: 0; }
+    /* Stop sequence node — uniform, no status states; matches the map pins. Status lives in the badge. */
+    .sc-node {
+      width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; line-height: 14px;
+      font-variant-numeric: tabular-nums; margin-top: 1px;
+      background: var(--icon-primary); color: var(--text-inverse);
+    }
     .stop-card-hdr-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; padding-top: 2px; }
+    /* Two colors (primary / tertiary), two sizes (13 / 12), one 18px line rhythm. */
     .stop-card-addr {
-      font-size: 13px; font-weight: 600; color: var(--text-primary);
-      margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 18px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .stop-card-sub {
-      font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+      font-size: 12px; font-weight: 400; color: var(--text-tertiary); line-height: 18px;
       font-variant-numeric: tabular-nums;
-      margin-bottom: 2px; line-height: 18px;
     }
-    .stop-card-role { font-size: 12px; color: var(--text-tertiary); line-height: 18px; }
+    .stop-card-role { font-size: 12px; font-weight: 400; color: var(--text-tertiary); line-height: 18px; }
+    /* Canceled stop — pulled from the route; status lives in the badge. Node dims, text reads normally. */
+    .stop-card.sc-canceled .sc-node { opacity: 0.5; }
+    /* Pooled POD thumbnails — one drawer section; per-stop grouping kept via .sc-thumbs
+       (display: contents) so the lightbox opens with the right stop's set + context. */
+    .pooled-pods { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sc-thumbs { display: contents; }
+    .sc-thumb {
+      width: 56px; height: 56px; border-radius: 4px; overflow: hidden; flex-shrink: 0;
+      border: 0.5px solid var(--border); background: var(--surface-base);
+      padding: 0; cursor: zoom-in; box-shadow: var(--shadow-element);
+    }
+    .sc-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .sc-no-pod { font-size: 12px; color: var(--text-tertiary); line-height: 17px; }
     .stop-card-edit {
       display: flex; align-items: center; justify-content: center;
       width: 24px; height: 24px; border-radius: 4px;
@@ -1664,40 +1722,125 @@
     .stop-card-caret { font-size: 14px; color: var(--text-tertiary); transition: transform 0.18s ease; flex-shrink: 0; }
     .stop-card.sc-expanded .stop-card-caret { transform: rotate(180deg); }
     .stop-card-body {
-      display: none; border-top: 0.5px solid var(--border);
-      padding: 0 14px; background: var(--surface-sunken);
+      display: none; border-top: 0.5px solid var(--border); padding: 0;
     }
     .stop-card.sc-expanded .stop-card-body { display: block; }
-    .sc-field { padding: 10px 0; border-bottom: 0.5px solid var(--border); }
-    .sc-field:last-child { border-bottom: none; padding-bottom: 12px; }
-    .sc-field-lbl {
-      font-size: 10px; font-weight: 700; color: var(--text-tertiary);
-      text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px;
+    /* Rows match the drw-field spec exactly: 56px label, centered, 36px min rows, full-bleed dividers. */
+    .sc-field {
+      display: flex; align-items: center; gap: 12px;
+      min-height: 36px; padding: 6px 14px;
+      border-bottom: 0.5px solid var(--border);
     }
-    .sc-field-val { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
-    .sc-field-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+    .sc-field:last-child { border-bottom: none; }
+    .sc-field-lbl {
+      width: 68px; flex-shrink: 0;
+      font-size: 11px; font-weight: 500; color: var(--text-tertiary); line-height: 18px;
+    }
+    .sc-field-val { flex: 1; min-width: 0; font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 18px; }
+    .sc-field-val-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sc-field-sub { font-size: 12px; font-weight: 400; color: var(--text-tertiary); }
+    /* Aligned to Button variant="primary" shape="icon" (small): 25², rounded-xs, neutral-primary bg, border-primary, icon-primary @12px. */
     .sc-call-btn {
       display: flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px; border-radius: 2px;
-      border: 0.5px solid var(--border-solid); background: var(--surface-primary);
+      width: 25px; height: 25px; border-radius: 4px;
+      border: 0.5px solid var(--border); background: var(--bg-neutral);
       cursor: pointer; flex-shrink: 0; box-shadow: var(--shadow-element);
+      transition: background 0.15s ease;
     }
-    .sc-call-btn i { font-size: 13px; color: var(--text-secondary); }
+    .sc-call-btn:hover { background: var(--bg-neutral-hover); }
+    .sc-call-btn i { font-size: 12px; color: var(--text-primary); }
 
-    .proof-photos { display: flex; gap: 8px; flex-wrap: wrap; }
-    .proof-photo-card {
-      width: 76px; height: 96px; border-radius: 4px;
-      border: 0.5px solid var(--border-solid);
-      overflow: hidden; flex-shrink: 0; cursor: pointer;
+    /* POD photo stack — static fanned cards rendered as a map marker at the delivered stop.
+       (The canonical pod-photo-stack animates on hover; the drawer map version is static.) */
+    .pps-stack { position: relative; width: 100%; height: 100%; }
+    .pps-slot {
+      position: absolute; top: 50%; left: 50%;
+      width: 36px; height: 36px; margin: -18px 0 0 -18px;
+      transform-origin: 50% 100%;
+      transform: translateX(calc(var(--spread-pos, 0) * 2px)) rotate(calc(var(--spread-pos, 0) * 7deg));
+      cursor: zoom-in;
     }
-    .proof-photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .proof-photo-placeholder {
-      width: 76px; height: 96px; border-radius: 4px;
-      border: 0.5px solid var(--border-solid);
-      background: var(--surface-base);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    .pps-photo {
+      width: 100%; height: 100%; border-radius: 4px;
+      border: 1.5px solid #fff; overflow: hidden; background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.14), 0 0 0 0.5px rgba(0,0,0,0.06);
     }
-    .proof-photo-placeholder i { font-size: 18px; color: var(--border-solid); }
+    .pps-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* POD lightbox — ported from the tracking page PodViewer (header + nav arrows + thumb rail). */
+    .pod-lightbox {
+      position: fixed; inset: 0; z-index: 2000;
+      background: hsla(0, 0%, 11%, 0.82);
+      display: none; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.18s ease;
+    }
+    .pod-lightbox.open { display: flex; opacity: 1; }
+    .pod-viewer {
+      position: relative; display: inline-flex; flex-direction: column; max-height: 86vh;
+      opacity: 0; transform: translateY(12px) scale(0.98);
+      transition: transform 0.22s cubic-bezier(0.2,0.8,0.2,1), opacity 0.22s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .pod-lightbox.open .pod-viewer { opacity: 1; transform: translateY(0) scale(1); }
+    .pv-hdr { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+    .pv-hdr-left { display: flex; flex-direction: column; min-width: 0; }
+    .pv-meta {
+      font-size: 12px; line-height: 18px; font-weight: 500;
+      color: rgba(252,252,252,0.6); font-variant-numeric: tabular-nums;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .pv-title { font-size: 16px; line-height: 20px; font-weight: 600; color: var(--text-inverse); }
+    .pv-hdr-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .pv-count {
+      font-size: 12px; line-height: 18px; font-weight: 500;
+      color: rgba(252,252,252,0.7); font-variant-numeric: tabular-nums; margin-right: 4px;
+    }
+    .pv-scrim-btn {
+      width: 28px; height: 28px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(252,252,252,0.12); color: var(--text-inverse);
+      border: none; cursor: pointer;
+    }
+    .pv-scrim-btn:hover { background: rgba(252,252,252,0.2); }
+    .pv-scrim-btn i { font-size: 14px; }
+    .pv-stage { position: relative; display: flex; align-items: center; justify-content: center; }
+    .pv-stage img {
+      max-height: 68vh; max-width: 88vw; border-radius: 8px; display: block;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+    }
+    .pv-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-primary); color: var(--text-primary);
+      border: none; cursor: pointer; z-index: 2;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .pv-prev { left: -56px; }
+    .pv-next { right: -56px; }
+    .pv-nav:disabled { opacity: 0.3; cursor: default; }
+    .pv-nav i { font-size: 20px; }
+    .pv-thumbs { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .pv-thumb {
+      width: 56px; height: 56px; border-radius: 6px; overflow: hidden; flex-shrink: 0;
+      padding: 0; background: none; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.2); opacity: 0.7;
+      transition: opacity 0.15s ease, border-color 0.15s ease;
+    }
+    .pv-thumb.active { border-color: #fff; opacity: 1; }
+    .pv-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* Attachments empty state */
+    .attach-dropzone {
+      margin-top: 8px; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px; border-radius: 8px;
+      border: 1px dashed var(--border-solid); background: var(--surface-primary);
+      color: var(--text-tertiary); font-size: 12px; font-weight: 500;
+      font-family: inherit; cursor: pointer;
+      transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+    }
+    .attach-dropzone:hover { background: var(--bg-neutral-hover); color: var(--text-secondary); border-color: var(--text-tertiary); }
+    .attach-dropzone i { font-size: 15px; }
 
     .drw-fields {
       margin: 20px 20px 0;
@@ -1716,8 +1859,8 @@
       height: 36px; padding: 0 14px; border-bottom: 0.5px solid var(--border);
     }
     .drw-field:last-child { border-bottom: none; }
-    .drw-field-lbl { font-size: 11px; font-weight: 500; color: var(--text-tertiary); width: 56px; flex-shrink: 0; }
-    .drw-field-val { flex: 1; font-size: 13px; font-weight: 500; color: var(--text-primary); min-width: 0; }
+    .drw-field-lbl { font-size: 11px; font-weight: 500; color: var(--text-tertiary); width: 68px; flex-shrink: 0; }
+    .drw-field-val { flex: 1; font-size: 13px; font-weight: 500; color: var(--text-primary); min-width: 0; font-variant-numeric: tabular-nums; }
     .drw-field-val.empty { color: var(--text-tertiary); font-weight: 400; }
     .drw-field-person { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .field-avatar {
@@ -2103,6 +2246,27 @@
 </div>
 
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="pod-lightbox" id="podLightbox">
+  <div class="pod-viewer" id="podViewer">
+    <div class="pv-hdr">
+      <div class="pv-hdr-left">
+        <span class="pv-meta" id="pvMeta"></span>
+        <span class="pv-title" id="pvTitle"></span>
+      </div>
+      <div class="pv-hdr-right">
+        <span class="pv-count" id="pvCount"></span>
+        <button type="button" class="pv-scrim-btn" id="pvDownload" title="Download photo" aria-label="Download photo"><i class="ph ph-download-simple"></i></button>
+        <button type="button" class="pv-scrim-btn" id="pvClose" title="Close" aria-label="Close"><i class="ph ph-x"></i></button>
+      </div>
+    </div>
+    <div class="pv-stage">
+      <button type="button" class="pv-nav pv-prev" id="pvPrev" aria-label="Previous photo"><i class="ph ph-caret-left"></i></button>
+      <img id="pvImg" src="" alt="Proof of delivery photo">
+      <button type="button" class="pv-nav pv-next" id="pvNext" aria-label="Next photo"><i class="ph ph-caret-right"></i></button>
+    </div>
+    <div class="pv-thumbs" id="pvThumbs"></div>
+  </div>
+</div>
 <aside class="drawer" id="detailDrawer">
   <div class="drawer-hdr"></div>
   <div class="drawer-body" id="drawerBody"></div>
@@ -2120,8 +2284,9 @@ const ROWS = [
   { status:'arrived',   id:'del_783050', booked:'Th 10/2', booker:'Marcus Webb',
     stops:[
       { num:1, stopId:'stop_8494757', address:'400 Howard St',   recipient:'Mei Lin',     status:'delivered', proof:2, order:'MSA-001', coords:[37.7876,-122.3947] },
-      { num:2, stopId:'stop_8494758', address:'900 Brannan St',  recipient:'Alex Torres', status:'delivered', proof:1, order:'MSA-002', coords:[37.7719,-122.3990] },
-      { num:3, stopId:'stop_8494759', address:'1550 Mission St', recipient:'Beth Nguyen', status:'arrived',   proof:0, order:'MSA-003', coords:[37.7742,-122.4194] },
+      { num:2, stopId:'stop_8494758', address:'900 Brannan St',  recipient:'Alex Torres', status:'delivered', proof:0, order:'MSA-002', coords:[37.7719,-122.3990] },
+      { num:3, stopId:'stop_8494759', address:'1275 Minna St',   recipient:'Cesar Delgado', status:'canceled', proof:0, order:'MSA-003', coords:[37.7731,-122.4085], note:'Receiver canceled — order pulled from route.' },
+      { num:4, stopId:'stop_8494760', address:'1550 Mission St', recipient:'Beth Nguyen', status:'arrived',   proof:0, order:'MSA-004', coords:[37.7742,-122.4194] },
     ],
     pickupCoords:[37.7910,-122.3960],
     driver:'Carlos R.', provider:'Curri', order:'MSA001...', price:'$87.40', coords:{ lat:37.7742, lng:-122.4194 } },
@@ -2134,10 +2299,10 @@ const ROWS = [
     ],
     pickupCoords:[37.7960,-122.4020],
     driver:'Diane W.', provider:'Curri', order:'MSB001...', price:'$124.00', coords:{ lat:37.7831, lng:-122.4341 } },
-  { status:'delivered', id:'del_782756', booked:'Th 10/2', booker:'Marcus Webb',      from:'88 Kearny St',       to:'900 Illinois St',      proof:1, recipient:'Tom Reed',       driver:'Kenji A.',     provider:'Curri',   order:'HFWBNM...',  price:'$16.80', coords:{ lat:37.7602, lng:-122.3874 } },
+  { status:'delivered', id:'del_782756', booked:'Th 10/2', booker:'Marcus Webb',      from:'88 Kearny St',       to:'900 Illinois St',      proof:0, recipient:'Tom Reed',       driver:'Kenji A.',     provider:'Curri',   order:'HFWBNM...',  price:'$16.80', coords:{ lat:37.7602, lng:-122.3874 } },
   { status:'delivered', id:'del_782501', booked:'Fr 10/3', booker:'Sara Chen',        from:'1 Market Plaza',     to:'450 Bryant St',        proof:2, recipient:'Lin Zhao',       driver:'Pat C.',       provider:'Curri',   order:'VLPQZX...',  price:'$29.60', coords:{ lat:37.7781, lng:-122.3933 } },
   { status:'delivered', id:'del_782340', booked:'Fr 10/3', booker:'Jordan Kim',       from:'330 Spear St',       to:'1500 Evans Ave',       proof:1, recipient:'Noah Brown',     driver:'Tomas E.',     provider:'Curri',   order:'XKRMNB...',  price:'$35.20', coords:{ lat:37.7541, lng:-122.3876 } },
-  { status:'delivered', id:'del_782109', booked:'Sa 10/4', booker:'Priya Nair',       from:'600 California St',  to:'800 Tennessee St',     proof:2, recipient:'Amy Clark',      driver:'Louis P.',     provider:'Curri',   order:'CGHWQY...',  price:'$21.95', coords:{ lat:37.7601, lng:-122.3882 } },
+  { status:'delivered', id:'del_782109', booked:'Sa 10/4', booker:'Priya Nair',       from:'600 California St',  to:'800 Tennessee St',     proof:0, recipient:'Amy Clark',      driver:'Louis P.',     provider:'Curri',   order:'CGHWQY...',  price:'$21.95', coords:{ lat:37.7601, lng:-122.3882 } },
   { status:'delivered', id:'del_781887', booked:'Sa 10/4', booker:'Emily Petersen',   from:'250 Stockton St',    to:'1800 Cesar Chavez',    proof:1, recipient:'Ryan James',     driver:'Diane W.',     provider:'Onfleet', order:'ZXMFVR...',  price:'$19.50', coords:{ lat:37.7487, lng:-122.4076 } },
   { status:'delivered', id:'del_781654', booked:'Su 10/5', booker:'Marcus Webb',      from:'77 Beale St',        to:'2400 Irving St',       proof:2, recipient:'Kate Wilson',    driver:'Ana M.',       provider:'Curri',   order:'QTSPKN...',  price:'$42.30', coords:{ lat:37.7623, lng:-122.4832 } },
   { status:'delivered', id:'del_781600', booked:'Su 10/5', booker:'Jordan Kim',
@@ -2809,7 +2974,7 @@ const LIVE_META = {
   'del_783445': { phase: 'En route to pickup',        badgeClass: 'arrived',   eta: 'ETA 7:10 pm' },
   'del_783210': { phase: 'At drop-off',               badgeClass: 'arrived',   eta: 'ETA 6:20 pm' },
   'del_782998': { phase: 'At pickup',                 badgeClass: 'arrived',   eta: 'ETA 6:55 pm' },
-  'del_783050': { phase: 'En route to first stop',    badgeClass: 'arrived',   eta: 'ETA 7:30 pm' },
+  'del_783050': { phase: 'Stop 3 canceled · en route to final stop', badgeClass: 'arrived', eta: 'ETA 7:30 pm' },
   'del_783012': { phase: 'En route to stop 2 of 4',   badgeClass: 'arrived',   eta: 'ETA 7:05 pm' },
   'del_784231': { phase: 'Sourcing driver',            badgeClass: 'pending',  eta: null },
 };
@@ -3080,19 +3245,27 @@ function avatarHTML(av) {
   return `<div class="field-avatar" style="background:${av.bg};color:${av.fg};">${av.initials}</div>`;
 }
 
-const POD_LOCKS = [3, 11, 17, 24, 31, 38, 45, 52, 59, 66, 73, 80];
-function collectedProofHTML(stops, delId) {
-  const total = stops.reduce((acc, s) => acc + (s.proof || 0), 0);
-  if (total > 0) {
-    const baseSeed = detSeed((delId || '') + 'pod');
-    const photos = Array.from({ length: Math.min(total, 6) }, (_, i) => {
-      const lock = POD_LOCKS[(baseSeed + i) % POD_LOCKS.length];
-      return `<div class="proof-photo-card"><img src="https://loremflickr.com/160/160/cardboard,parcel?lock=${lock}" alt="POD photo" loading="lazy"></div>`;
-    }).join('');
-    return `<div class="proof-photos">${photos}</div>`;
-  }
-  const placeholder = `<div class="proof-photo-placeholder"><i class="ph ph-image"></i></div>`;
-  return `<div class="proof-photos">${placeholder}${placeholder}</div>`;
+// POD photos for a stop — reuse the real POD_PHOTOS map (same as the table + live-map pins),
+// falling back to deterministic picsum seeds so a stack always renders.
+function stopPhotos(stopKey, count) {
+  const real = POD_PHOTOS[stopKey];
+  if (real && real.length) return real.slice(0, 4);
+  const base = detSeed((stopKey || '') + 'pod');
+  return Array.from({ length: Math.min(count || 1, 4) }, (_, i) => `https://picsum.photos/seed/pod-${base + i}/160/160`);
+}
+// Static fanned photo stack markup (canonical pod-photo-stack layout, no hover animation).
+// Rightmost (last) card sits on top; click any card to open the lightbox.
+function podStackHTML(photos, meta, title) {
+  const shown = photos.slice(0, 4);
+  if (!shown.length) return '';
+  const center = (shown.length - 1) / 2;
+  const slots = shown.map((url, i) => {
+    const sp = i - center;
+    return `<div class="pps-slot" data-pod-full="${url}" style="--spread-pos:${sp}; z-index:${10 + i};">
+      <div class="pps-photo"><img src="${url}" loading="lazy" alt="POD photo"></div>
+    </div>`;
+  }).join('');
+  return `<div class="pps-stack" data-pod-meta="${meta || ''}" data-pod-title="${title || ''}">${slots}</div>`;
 }
 
 // ── DRAWER OPEN / CLOSE ──
@@ -3107,10 +3280,106 @@ function stopOrderPO(rId, dropoffIdx, isPickup) {
 function stopItems(rId, stopNum) {
   return detPick(rId + stopNum, 'items', [1, 2, 3, 4, 5]);
 }
+// "Mo 9/29" → "Mon, Sep 29 · 9:14 AM" (time deterministic per delivery)
+const DAY_FULL = { Mo:'Mon', Tu:'Tue', We:'Wed', Th:'Thu', Fr:'Fri', Sa:'Sat', Su:'Sun' };
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function formatBooked(booked, id) {
+  const m = (booked || '').match(/^(\w\w)\s+(\d+)\/(\d+)$/);
+  if (!m) return booked || '—';
+  const seed = detSeed(id + 'bk');
+  const h24 = 7 + (seed % 11);            // 7 AM – 5 PM
+  const min = (seed * 7) % 60;
+  const ampm = h24 >= 12 ? 'PM' : 'AM';
+  const h12 = h24 > 12 ? h24 - 12 : h24;
+  return `${DAY_FULL[m[1]] || m[1]}, ${MONTH_ABBR[+m[2] - 1]} ${+m[3]} · ${h12}:${String(min).padStart(2, '0')} ${ampm}`;
+}
+
+// ── DRAWER ROUTE MAP ──
+let drawerMap = null;
+function destroyDrawerMap() {
+  if (drawerMap) { drawerMap.remove(); drawerMap = null; }
+}
+function dmPinIcon(num, canceled) {
+  return L.divIcon({
+    className: '',
+    html: canceled
+      ? `<div class="dm-pin dm-pin-canceled">${num}</div>`
+      : `<div class="dm-pin">${num}</div>`,
+    iconSize: [26, 26], iconAnchor: [13, 24]
+  });
+}
+function dmOriginIcon() {
+  return L.divIcon({
+    className: '', html: `<div class="dm-origin"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7]
+  });
+}
+function buildDrawerMap(r, isMulti) {
+  const el = document.getElementById('drawerMap');
+  if (!el) return;
+
+  // Waypoints match the stop-card numbering; delivered stops carry their POD photos.
+  let origin = null;        // un-numbered route start (MSD pickup)
+  let waypoints = [];       // { num, lat, lng, proof }
+  if (isMulti) {
+    if (r.pickupCoords) origin = { lat: r.pickupCoords[0], lng: r.pickupCoords[1] };
+    waypoints = r.stops.filter(s => s.coords).map(s => ({ num: s.num, lat: s.coords[0], lng: s.coords[1], proof: s.proof || 0, key: s.stopId, order: s.order, addr: s.address, status: s.status || 'pending' }));
+  } else if (r.coords) {
+    const drop = { lat: r.coords.lat, lng: r.coords.lng };
+    let pickup;
+    if (r.routePath && r.routePath.length) pickup = { lat: r.routePath[0][0], lng: r.routePath[0][1] };
+    else { const s = detSeed(r.id); pickup = { lat: drop.lat + ((s % 20) - 10) / 600, lng: drop.lng + (((s >> 3) % 20) - 10) / 600 }; }
+    waypoints = [
+      { num: 1, lat: pickup.lat, lng: pickup.lng, proof: 0, key: r.id + '-p', order: stopOrderPO(r.id, 0, true), addr: r.from },
+      { num: 2, lat: drop.lat, lng: drop.lng, proof: r.proof || 0, key: r.id, order: stopOrderPO(r.id, 0, false), addr: r.to },
+    ];
+  }
+  if (!waypoints.length) { el.style.display = 'none'; return; }
+
+  drawerMap = L.map(el, { zoomControl: false, attributionControl: false, dragging: true, scrollWheelZoom: false });
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(drawerMap);
+
+  // Route line through origin → waypoints (use real routePath for single deliveries when present).
+  // Canceled stops are pulled from the route, so the driver's line skips them.
+  const routeWaypoints = waypoints.filter(w => w.status !== 'canceled');
+  const linePts = (!isMulti && r.routePath && r.routePath.length)
+    ? r.routePath.map(p => [p[0], p[1]])
+    : [...(origin ? [[origin.lat, origin.lng]] : []), ...routeWaypoints.map(w => [w.lat, w.lng])];
+  if (linePts.length > 1) {
+    L.polyline(linePts, { color: '#1c1c1c', weight: 3.5, opacity: 0.92, lineCap: 'round', lineJoin: 'round' }).addTo(drawerMap);
+  }
+  if (origin) L.marker([origin.lat, origin.lng], { icon: dmOriginIcon(), interactive: false }).addTo(drawerMap);
+  waypoints.forEach(w => {
+    if (w.status === 'canceled') {
+      const cm = L.marker([w.lat, w.lng], { icon: dmPinIcon(w.num, true) }).addTo(drawerMap);
+      cm.bindTooltip(`Canceled · ${w.addr}`, { direction: 'top', offset: [0, -22], className: 'dm-cancel-tooltip', opacity: 1 });
+    } else if (w.proof > 0) {
+      // Delivered stop → static POD photo stack marker.
+      const icon = L.divIcon({
+        className: 'pps-marker',
+        html: podStackHTML(stopPhotos(w.key, w.proof), w.order, w.addr),
+        iconSize: [64, 52], iconAnchor: [32, 44]
+      });
+      const m = L.marker([w.lat, w.lng], { icon, zIndexOffset: 500 }).addTo(drawerMap);
+      m.on('click', e => {
+        const slot = e.originalEvent.target.closest('[data-pod-full]');
+        if (slot) openPodViewerFrom(slot);
+      });
+    } else {
+      L.marker([w.lat, w.lng], { icon: dmPinIcon(w.num), interactive: false }).addTo(drawerMap);
+    }
+  });
+
+  const allPts = [...linePts, ...waypoints.map(w => [w.lat, w.lng])];
+  drawerMap.fitBounds(L.latLngBounds(allPts), { padding: [34, 34], maxZoom: 15 });
+  // Drawer slides in from a transform, so size the map once it has settled.
+  setTimeout(() => { if (drawerMap) { drawerMap.invalidateSize(); drawerMap.fitBounds(L.latLngBounds(allPts), { padding: [34, 34], maxZoom: 15 }); } }, 60);
+}
 
 function openDrawer(id) {
   const r = ROWS.find(row => row.id === id);
   if (!r) return;
+  destroyDrawerMap();
 
   const body = document.getElementById('drawerBody');
   const isMulti = !!r.stops;
@@ -3138,6 +3407,13 @@ function openDrawer(id) {
     ];
   }
 
+  // Delivery-level facts (deterministic per delivery)
+  const distance = (((detSeed(r.id + 'dist') % 120) + 8) / 10).toFixed(1);  // 0.8–12.7 mi
+  const bookedFull = formatBooked(r.booked, r.id);
+  const totalWeight = stops.reduce((acc, s) => {
+    const wt = ((detSeed(r.id + s.num + 'w') % 50) + 1) * 0.3;              // same formula as the stop card
+    return acc + (s.items || 1) * wt;
+  }, 0);
   const hdr = document.getElementById('detailDrawer').querySelector('.drawer-hdr');
   hdr.innerHTML = `
     <div class="drawer-hdr-top">
@@ -3150,17 +3426,24 @@ function openDrawer(id) {
     <div class="drawer-hdr-meta">
       <div class="drawer-hdr-left">
         <span class="badge badge-${r.status}"><span class="dot"></span>${LABEL[r.status]}</span>
-        <span class="drawer-del-id">${r.id}</span>
+        <button class="drawer-del-id" id="drawerIdCopy" title="Copy ID">${r.id}<i class="ph ph-copy"></i></button>
       </div>
-      <div class="drawer-hdr-actions">
-        <button class="drawer-btn teal" id="drawerTrackBtn"><i class="ph ph-share-network"></i>Track</button>
-        <button class="drawer-btn"><i class="ph ph-file-text"></i>Bill of lading</button>
-        <button class="drawer-more-btn"><i class="ph ph-dots-three"></i></button>
-      </div>
+    </div>
+    <div class="drawer-hdr-actions">
+      <button class="drawer-btn"><i class="ph ph-printer"></i>Print label</button>
+      <button class="drawer-btn"><i class="ph ph-file-text"></i>Bill of lading</button>
+      <button class="drawer-btn teal" id="drawerTrackBtn"><i class="ph ph-share-network"></i>Track</button>
+      <button class="drawer-more-btn"><i class="ph ph-dots-three"></i></button>
     </div>`;
   document.getElementById('drawerClose').addEventListener('click', closeDrawer);
   document.getElementById('drawerTrackBtn').addEventListener('click', () => {
     window.open(`${TRACKING_BASE_URL}/?delivery=${r.id}`, '_self');
+  });
+  document.getElementById('drawerIdCopy').addEventListener('click', () => {
+    if (navigator.clipboard) navigator.clipboard.writeText(r.id);
+    const ic = document.querySelector('#drawerIdCopy i');
+    ic.className = 'ph ph-check';
+    setTimeout(() => { ic.className = 'ph ph-copy'; }, 1200);
   });
 
   const stopCardsHTML = stops.map((s, i) => {
@@ -3175,23 +3458,27 @@ function openDrawer(id) {
                     : isFirst             ? `Pickup · ${itemsStr}`
                     : isLast              ? `Dropoff · ${itemsStr}`
                     :                       `Stop ${s.num} · ${itemsStr}`;
+    // PO lives in the card header — no duplicate Numbers row. Empty fields are omitted.
     const fields = [];
     if (s.recipient && s.recipient !== '—') fields.push({ lbl:'Contact', val: s.recipient, call: true });
+    if ((s.status || 'pending') === 'delivered' && (isMulti || !isFirst)) {
+      fields.push({ lbl:'Receiver', val: detPick(r.id + s.num, 'rcv', ['Front desk', s.recipient || 'Front desk', 'M. Sanchez', 'J. Cole', 'R. Patel']) });
+    }
     fields.push({ lbl:'Details', val:`${items}× ${itemType}`, sub:`${itemDim} · ${itemWt} lbs` });
-    fields.push({ lbl:'Numbers', val: s.order || '—' });
-    fields.push({ lbl:'Notes',   val: s.note  || '—' });
+    if (s.note && s.note !== '—') fields.push({ lbl:'Notes', val: s.note });
     const bodyHTML = fields.map(f => `
       <div class="sc-field">
         <div class="sc-field-lbl">${f.lbl}</div>
-        <div class="sc-field-val"${f.call ? ' style="display:flex;align-items:center;justify-content:space-between;"' : ''}>
-          <span>${f.val}</span>
-          ${f.call ? `<button class="sc-call-btn"><i class="ph ph-phone"></i></button>` : ''}
+        <div class="sc-field-val">
+          ${f.call
+            ? `<div class="sc-field-val-row"><span>${f.val}</span><button class="sc-call-btn"><i class="ph ph-phone"></i></button></div>`
+            : `<span>${f.val}${f.sub ? ` <span class="sc-field-sub">· ${f.sub}</span>` : ''}</span>`}
         </div>
-        ${f.sub ? `<div class="sc-field-sub">${f.sub}</div>` : ''}
       </div>`).join('');
     const statusKey = s.status || 'pending';
-    return `<div class="stop-card">
+    return `<div class="stop-card${statusKey === 'canceled' ? ' sc-canceled' : ''}">
       <div class="stop-card-hdr">
+        <span class="sc-node">${s.num}</span>
         <div class="stop-card-hdr-left">
           <div class="stop-card-addr">${s.address}</div>
           <div class="stop-card-sub">${s.order}</div>
@@ -3207,15 +3494,29 @@ function openDrawer(id) {
     </div>`;
   }).join('');
 
+  // Pooled POD section — photos from all stops in one place; per-stop grouping
+  // preserved so the viewer opens with the right stop's set + context.
+  const pooledPods = stops.map((s, i) => {
+    const proof = s.proof || 0;
+    if (!proof) return '';
+    const key = s.stopId || (i === stops.length - 1 ? r.id : r.id + '-p');
+    return `<span class="sc-thumbs" data-pod-meta="${s.order}" data-pod-title="${s.address}">${stopPhotos(key, proof).map(u =>
+      `<button type="button" class="sc-thumb" data-pod-full="${u}"><img src="${u}" loading="lazy" alt="POD photo"></button>`).join('')}</span>`;
+  }).filter(Boolean).join('');
+  const anyDelivered = stops.some(s => (s.status || '') === 'delivered');
+  const podSectionHTML = pooledPods
+    ? `<div class="pooled-pods">${pooledPods}</div>`
+    : `<p class="sc-no-pod">${anyDelivered ? 'No proof of delivery captured' : 'No proof of delivery yet'}</p>`;
+
   body.innerHTML = `
+    <div class="drawer-map" id="drawerMap"></div>
     <div class="drawer-section">
       <div class="drawer-section-title">Stops</div>
-      <div class="drawer-section-count">${stops.length} ${stops.length === 1 ? 'stop' : 'stops'}</div>
       <div class="stop-cards">${stopCardsHTML}</div>
     </div>
     <div class="drawer-section" style="padding-top:20px;">
       <div class="drawer-section-title">Proof of delivery</div>
-      ${collectedProofHTML(stops, r.id)}
+      ${podSectionHTML}
     </div>
     <div class="drw-fields">
       <button class="drw-fields-edit"><i class="ph ph-pencil-simple"></i></button>
@@ -3226,6 +3527,14 @@ function openDrawer(id) {
       <div class="drw-field">
         <div class="drw-field-lbl">Timing</div>
         <div class="drw-field-val">${timing}</div>
+      </div>
+      <div class="drw-field">
+        <div class="drw-field-lbl">Distance</div>
+        <div class="drw-field-val">${distance} mi</div>
+      </div>
+      <div class="drw-field">
+        <div class="drw-field-lbl">Booked</div>
+        <div class="drw-field-val">${bookedFull}</div>
       </div>
       <div class="drw-field">
         <div class="drw-field-lbl">Driver</div>
@@ -3245,22 +3554,33 @@ function openDrawer(id) {
         <div class="drw-field-lbl">Price</div>
         <div class="drw-field-val">${r.price}</div>
       </div>
+      <div class="drw-field">
+        <div class="drw-field-lbl">Total weight</div>
+        <div class="drw-field-val">${totalWeight.toFixed(1)} lbs</div>
+      </div>
     </div>
     <div class="drawer-section" style="padding-top:20px; padding-bottom:28px;">
       <div class="drawer-section-title">Attachments</div>
-      <p style="font-size:12px; color:var(--text-tertiary); line-height:17px; margin-top:2px;">No attachments</p>
+      <button type="button" class="attach-dropzone">
+        <i class="ph ph-paperclip"></i>
+        <span>Add attachment</span>
+      </button>
     </div>`;
 
   body.querySelectorAll('.stop-card').forEach(card => {
     card.querySelector('.stop-card-hdr').addEventListener('click', () => card.classList.toggle('sc-expanded'));
     card.querySelector('.stop-card-edit').addEventListener('click', e => e.stopPropagation());
   });
+  body.querySelectorAll('.pooled-pods .sc-thumb').forEach(t =>
+    t.addEventListener('click', () => openPodViewerFrom(t)));
 
   document.getElementById('drawerBackdrop').classList.add('open');
   document.getElementById('detailDrawer').classList.add('open');
+  buildDrawerMap(r, isMulti);
 }
 
 function closeDrawer() {
+  destroyDrawerMap();
   document.getElementById('drawerBackdrop').classList.remove('open');
   document.getElementById('detailDrawer').classList.remove('open');
   document.querySelectorAll('tr.row-highlighted').forEach(r => r.classList.remove('row-highlighted'));
@@ -3279,7 +3599,66 @@ function closeDrawer() {
 }
 
 document.getElementById('drawerBackdrop').addEventListener('click', closeDrawer);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// ── POD LIGHTBOX (ported from tracking-page PodViewer) ──
+const podLightbox = document.getElementById('podLightbox');
+const pvState = { photos: [], index: 0, metaBase: '' };
+
+function renderPodViewer() {
+  const { photos, index, metaBase } = pvState;
+  document.getElementById('pvImg').src = photos[index] || '';
+  document.getElementById('pvMeta').textContent = metaBase ? `${metaBase} · Photo ${index + 1}` : `Photo ${index + 1}`;
+  document.getElementById('pvCount').textContent = `${index + 1} of ${photos.length}`;
+  document.getElementById('pvPrev').disabled = index === 0;
+  document.getElementById('pvNext').disabled = index === photos.length - 1;
+  const thumbs = document.getElementById('pvThumbs');
+  thumbs.innerHTML = photos.map((u, i) =>
+    `<button type="button" class="pv-thumb${i === index ? ' active' : ''}" data-i="${i}"><img src="${u}" alt=""></button>`).join('');
+  thumbs.querySelectorAll('.pv-thumb').forEach(t =>
+    t.addEventListener('click', () => { pvState.index = +t.dataset.i; renderPodViewer(); }));
+}
+function pvStep(delta) {
+  pvState.index = Math.max(0, Math.min(pvState.index + delta, pvState.photos.length - 1));
+  renderPodViewer();
+}
+function openPodViewer(photos, index, meta) {
+  pvState.photos = photos;
+  pvState.index = Math.max(0, Math.min(index, photos.length - 1));
+  pvState.metaBase = (meta && meta.metaBase) || '';
+  document.getElementById('pvTitle').textContent = (meta && meta.title) || '';
+  renderPodViewer();
+  podLightbox.classList.add('open');
+}
+// Open from any clicked [data-pod-full]; siblings in the same strip/stack form the photo set.
+function openPodViewerFrom(el) {
+  const container = el.closest('.pps-stack, .sc-thumbs');
+  const all = container ? Array.from(container.querySelectorAll('[data-pod-full]')) : [el];
+  const idx = Math.max(0, all.indexOf(el));
+  openPodViewer(all.map(x => x.dataset.podFull), idx, {
+    metaBase: (container && container.dataset.podMeta) || '',
+    title: (container && container.dataset.podTitle) || ''
+  });
+}
+function closePodViewer() {
+  podLightbox.classList.remove('open');
+  document.getElementById('pvImg').src = '';
+}
+document.getElementById('pvClose').addEventListener('click', closePodViewer);
+document.getElementById('pvPrev').addEventListener('click', () => pvStep(-1));
+document.getElementById('pvNext').addEventListener('click', () => pvStep(1));
+document.getElementById('pvDownload').addEventListener('click', () => {
+  if (pvState.photos[pvState.index]) window.open(pvState.photos[pvState.index], '_blank');
+});
+podLightbox.addEventListener('click', e => { if (e.target === podLightbox) closePodViewer(); });
+
+document.addEventListener('keydown', e => {
+  const viewerOpen = podLightbox.classList.contains('open');
+  if (viewerOpen && e.key === 'ArrowRight') { pvStep(1); return; }
+  if (viewerOpen && e.key === 'ArrowLeft')  { pvStep(-1); return; }
+  if (e.key !== 'Escape') return;
+  if (viewerOpen) { closePodViewer(); return; }
+  closeDrawer();
+});
 
 // ── NAV VIEW SWITCHING ──
 document.querySelectorAll('[data-view]').forEach(btn => {
