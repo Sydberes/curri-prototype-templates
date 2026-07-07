@@ -10,6 +10,7 @@ Starter templates for prototyping Curri product surfaces with Claude Code. The c
 │   ├── booking-funnel/        ← booking flow (multi-step funnel, vehicle selector)
 │   ├── delivery-history/      ← admin delivery history + live deliveries
 │   ├── route-planner/         ← dispatcher planner (swimlanes + exceptions)
+│   ├── tracking-page/         ← customer delivery tracking (booker + receiver views)
 │   └── shell/                 ← generic sidenav + chrome shell for custom surfaces
 └── changelog-component/       ← in-app changelog notification (separate concern, see below)
 ```
@@ -23,6 +24,7 @@ Each template is a standalone project that runs with `npm install && npm run dev
 | `booking-funnel` | https://ai-booking-experience.vercel.app | `Brain/Projects/ai-booking-experience` |
 | `delivery-history` | https://prototype-deploy-map.vercel.app | `Brain/prototype-deploy-map` (static HTML wrapped in Vite) |
 | `route-planner` | https://route-planner-exceptions.vercel.app | `Brain/Projects/route-planner-exceptions` |
+| `tracking-page` | https://tracking-page-seven.vercel.app | `Brain/Projects/tracking-page` |
 | `shell` | https://core-intelligence-seven.vercel.app | `Brain/Projects/core-intelligence` (stripped) |
 
 ## How to use a template directly
